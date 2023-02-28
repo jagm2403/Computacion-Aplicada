@@ -1,0 +1,37 @@
+clear
+A = zeros(256);
+x=[]*16;
+y=[]*16;
+for i=1:16
+    x(i) = randi([1,255],1);
+    y(i) = randi([1,255],1);
+end
+
+
+$Para el siguiente truco$
+
+i = 0;
+ind = 0;
+for i=1:256
+    for j=1:256
+        distancias = [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0];
+        for k=1:16
+            distancia = sqrt(((x(k)-i)^2)+((y(k)-j)^2));
+            distancias(k) = distancia;
+        end
+        mindist = min(distancias);
+        if mindist == 0
+            A(i,j) = 0;
+        else
+            ind = find(distancias == mindist);
+            if length(ind) == 2
+                A(i,j) = 17;
+            else
+            A(i,j) = ind;
+            end
+        end
+    end
+end
+mesh(A)
+B = mat2gray(A);
+imshow(B)
