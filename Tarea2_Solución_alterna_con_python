@@ -1,0 +1,17 @@
+import pandas
+import numpy as np
+df = pandas.read_csv('data.csv')
+
+time = np.array(df.time,dtype=float)
+zi = np.array(df.Z,dtype=float)
+xi = np.array(df.X,dtype=float)
+yi = np.array(df.Y,dtype=float)
+
+funcion_x = np.polyfit(time,xi,1)
+print(funcion_x)
+
+funcion_y = np.polyfit(time,yi,1)
+print(funcion_y)
+
+funcion_z = np.polyfit(time,zi,2)
+print(funcion_z)
