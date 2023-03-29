@@ -1,0 +1,161 @@
+#Problema 1. Diagonal Superior
+
+import sympy
+m = int(input("Introduzca la dimensión de la matriz A: "))
+matriz = []
+suma = 0
+print('\n')
+numeros_primos = list(sympy.primerange(2, m**(2 + 1)))
+matriz = [[None]*m for i in range(m)]
+print("La matriz de A números primos es: \n")
+for i in range(m):
+  for j in range(m):
+    matriz[i][j] = numeros_primos[i*m+j]
+    print(matriz[i][j], end= '    ')
+  print('\n')
+fil = m 
+col = m 
+filas = m 
+for i in range(m):
+  for j in range(fil):
+    suma = suma + matriz[fil-1][col-1]
+    fil = fil - 1
+  col = col - 1
+  filas = filas - 1
+  fil = filas
+print("La suma de los elementos en la matriz diagonal superior es: ",suma)
+
+#Problema 2. Análisis Estadístico
+
+import pandas
+import numpy as np
+import scipy.stats as stats
+from scipy.stats import norm
+import matplotlib.pyplot as plt
+from sklearn.metrics import r2_score
+import math
+
+
+datos = pandas.read_csv('datos.csv')
+
+estatura = np.array(datos.estatura,dtype=int)
+calzado = np.array(datos.calzado,dtype=float)
+sexo = np.array(datos.Sexo,dtype=str)
+
+
+mean_estatura, desv_estatura = norm.fit(estatura)
+mean_calzado, desv_calzado = norm.fit(calzado)
+
+print("La desviación standar de estatura es: ",desv_estatura, " y la del calzado: ",desv_calzado)
+print("El promedio de las estaturas es de: ",mean_estatura," y del calzado: ",mean_calzado)
+
+print("\n De igual manera a continuación se muestran las gráficas siguientes, pero se muestra cómo queda la función normal con la función matemática y cómo queda utilizando ya funciones predeterminadas para realizar el ajuste dependiendo de las probabilidades.")
+
+plt.hist(estatura)
+plt.title('Histograma de estaturas')
+plt.xlabel('Estaturas')
+plt.ylabel('Frecuencia')
+plt.show() 
+
+plt.hist(calzado)
+plt.title('Histograma de calzado')
+plt.xlabel('Calzado')
+plt.ylabel('Frecuencia')
+plt.show()
+
+x_est = np.linspace(estatura.min(), estatura.max(), 100)
+funcion_normal_estatura = (1/(desv_estatura*((2*3.1416)**(1/2))))*(2.718281**(-((x_est-mean_estatura)**2)/(2*(desv_estatura**2))))
+plt.hist(estatura, bins=10, density=True, alpha=0.5)
+plt.plot(x_est, funcion_normal_estatura, 'r-', lw=2)
+plt.title('Histograma con distribución normal de estaturas')
+plt.xlabel('Estaturas')
+plt.ylabel('Frecuencia normalizada')
+plt.show()
+
+x_calz = np.linspace(calzado.min(), calzado.max(), 100)
+funcion_normal_calzado = (1/(desv_calzado*((2*3.1416)**(1/2))))*(2.718281**(-((x_calz-mean_calzado)**2)/(2*(desv_calzado**2))))
+plt.hist(calzado, bins=10, density=True, alpha=0.5)
+plt.plot(x_calz, funcion_normal_calzado, 'r-', lw=2)
+plt.title('Histograma con distribución normal de calzado')
+plt.xlabel('Calzado')
+plt.ylabel('Frecuencia normalizada')
+plt.show()
+
+extr_inf_est=float(mean_estatura-desv_estatura)
+extr_sup_est=float(mean_estatura+desv_estatura)
+prob_estatura = 0
+
+for i in np.arange(extr_inf_est, extr_sup_est, 1):
+  prob_estatura = prob_estatura + (1/(desv_estatura*((2*3.1416)**(1/2))))*(2.718281**(-((i-mean_estatura)**2)/(2*(desv_estatura**2))))
+
+
+extr_inf_calz=int(mean_calzado-desv_calzado)
+extr_sup_calz=int(mean_calzado+desv_calzado)
+prob_calzado = 0
+
+for i in np.arange(extr_inf_calz, extr_sup_calz, 1):
+  prob_calzado = prob_calzado + (1/(desv_calzado*((2*3.1416)**(1/2))))*(2.718281**(-((i-mean_calzado)**2)/(2*(desv_calzado**2))))
+
+
+print("La probabilidad de que un punto caiga dentro de la primera desviación estandar de estatura es de: ", prob_estatura, " Mientras que la probabilidad dentro de calzado es de: ",prob_calzado)
+
+h_est=[]
+for i in range(len(estatura)):
+  if sexo[i] == "Masculino":
+    h_est.append(estatura[i])
+
+h_calz=[]
+for i in range(len(calzado)):
+  if sexo[i] == "Masculino":
+    h_calz.append(calzado[i])
+
+m_est=[]
+for i in range(len(estatura)):
+  if sexo[i] == "Femenino":
+    m_est.append(estatura[i])
+
+m_calz=[]
+for i in range(len(calzado)):
+  if sexo[i] == "Femenino":
+    m_calz.append(calzado[i])
+
+gen_est_calz = np.polyfit(estatura,calzado,1)
+pred_gen = np.poly1d(gen_est_calz)
+
+h_est_calz = np.polyfit(h_est,h_calz,1)
+pred_h = np.poly1d(h_est_calz)
+
+m_est_calz = np.polyfit(m_est,m_calz,1)
+pred_m = np.poly1d(m_est_calz)
+
+print("La función lineal que relaciona en general estaturas y calzado fue de: y = ",gen_est_calz[0],"x + ",gen_est_calz[1], " Con una R^2 de: ",r2_score(calzado, pred_gen(estatura)))
+print("La función lineal que relaciona en hombres estaturas y calzado fue de: y = ",h_est_calz[0],"x + ",h_est_calz[1], " Con una R^2 de: ",r2_score(calzado, pred_h(estatura)))
+print("La función lineal que relaciona en mujeres estaturas y calzado fue de: y = ",m_est_calz[0],"x + ",m_est_calz[1], " Con una R^2 de: ",r2_score(calzado, pred_m(estatura)))
+
+
+#Problema 3. Método de Cramer
+
+import numpy as np
+matriz = [1/4,3/20,0],[9/20,1/2,3/4],[3/10,7/20,1/4]
+coeff=[1.5],[5],[3]
+resultados = []
+
+def repl_col(sis,m,enteros):
+  n=len(sis)
+  var = [row.copy() for row in sis]
+  for i in range(n):
+    var[i][m]=enteros[i][0]
+  return var
+
+def cramer(sistema,resul,ref):
+  n = len(sistema)
+  det_sistema = np.linalg.det(sistema)
+  for j in range(n):
+    sistema=ref
+    variable = repl_col(sistema,j,resul)
+    det_variable = np.linalg.det(variable)
+    valor_variable = det_variable/det_sistema
+    resultados.append(valor_variable)
+  return resultados
+
+print(cramer(matriz,coeff,matriz))
