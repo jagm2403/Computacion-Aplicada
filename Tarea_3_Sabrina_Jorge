@@ -1,0 +1,24 @@
+import numpy as np
+matriz = [1,3],[1.5,2]
+coeff=[300],[350]
+resultados = []
+
+def repl_col(sis,m,enteros):
+  n=len(sis)
+  var = [row.copy() for row in sis]
+  for i in range(n):
+    var[i][m]=enteros[i][0]
+  return var
+
+def cramer(sistema,resul,ref):
+  n = len(sistema)
+  det_sistema = np.linalg.det(sistema)
+  for j in range(n):
+    sistema=ref
+    variable = repl_col(sistema,j,resul)
+    det_variable = np.linalg.det(variable)
+    valor_variable = det_variable/det_sistema
+    resultados.append(valor_variable)
+  return resultados
+
+print(cramer(matriz,coeff,matriz))
