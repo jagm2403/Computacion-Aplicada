@@ -1,0 +1,39 @@
+import math
+
+def f(x):
+    return math.exp(x**2)
+
+def g(x):
+    return 1 + (((math.e)**-x)*math.sin(4*x))
+
+def j(x):
+    return math.sin(x*math.pi)
+
+def k(x):
+    return 1 + (((math.e)**-x)*math.cos(4*x))
+
+def l(x):
+    return math.sin(x**(1/2))
+
+
+def simpson(f,a,b,n):
+  suma = 0
+  h = (b - a) / n
+  for i in range(n):
+      xi = a + (i * h)
+      yi = f(xi)
+      if i == 0 or i == n:
+          suma = suma + yi
+      elif i % 3 == 0:
+          suma = suma + (2 * yi)
+      else:
+          suma = suma + (3 * yi)
+
+  return h*(3/8) * suma
+int_fun_1 = simpson(f,0,0.5,999)
+int_fun_2 = simpson(g,0,1,999)
+int_fun_3 = simpson(j,0,1,999)
+int_fun_4 = simpson(k,0,1,999)
+int_fun_5 = simpson(l,0,1,999)
+
+print("La integral de la primera función es: ", int_fun_1, " de la segunda: ", int_fun_2, " de la tercera: ", int_fun_3, " de la cuarta: ", int_fun_4, " de la cuarta: ", int_fun_5)
